@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meal Map – Your Indian Kitchen Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --saffron: #E8640A;
+  --turmeric: #F5A623;
+  --cardamom: #2D5016;
+  --cream: #FDF8F0;
+  --charcoal: #1A1208;
+  --clay: #C4773B;
+  --rose: #D4526A;
+  --mint: #4A7C59;
+  --warm-white: #FEFCF8;
+  --shadow: rgba(26,18,8,0.12);
+  --shadow-deep: rgba(26,18,8,0.25);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── ONBOARDING ─────────────────────────────────── */
+#onboarding {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #1A1208 0%, #2D2010 50%, #1A1208 100%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#onboarding.hidden { opacity: 0; pointer-events: none; transform: scale(1.05); }
+
+.onboard-card {
+  background: var(--warm-white);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.onboard-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--saffron), var(--turmeric), var(--clay));
+}
+
+.ob-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--saffron);
+  margin-bottom: 4px;
+}
+.ob-sub { color: #888; font-size: 0.85rem; margin-bottom: 28px; }
+
+.ob-step { display: none; }
+.ob-step.active { display: block; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ob-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+  color: var(--charcoal);
+}
+.ob-desc { color: #666; font-size: 0.88rem; margin-bottom: 22px; line-height: 1.6; }
+
+.ob-input {
+  width: 100%; padding: 12px 16px;
+  border: 2px solid #E8E0D5;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  background: var(--warm-white);
+  color: var(--charcoal);
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+.ob-input:focus { border-color: var(--saffron); }
+
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip {
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 2px solid #E8E0D5;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #555;
+  transition: all 0.2s;
+  user-select: none;
+}
+.chip:hover { border-color: var(--saffron); color: var(--saffron); }
+.chip.active { background: var(--saffron); border-color: var(--saffron); color: #fff; }
+
+.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.time-card {
+  border: 2px solid #E8E0D5;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.time-card:hover, .time-card.active { border-color: var(--saffron); background: #FFF5EE; }
+.time-card .tc-day { font-size: 0.8rem; color: #888; }
+.time-card .tc-label { font-weight: 600; font-size: 0.9rem; margin: 4px 0; }
+
+.progress-dots { display: flex; gap: 6px; margin-bottom: 22px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #E0D8CE; transition: all 0.3s; }
+.dot.active { background: var(--saffron); width: 24px; border-radius: 4px; }
+
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--saffron), var(--clay));
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-size: 1rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 16px rgba(232,100,10,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,100,10,0.4); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-skip {
+  width: 100%; padding: 10px;
+  background: transparent; border: none;
+  color: #999; font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 8px;
+}
+.btn-skip:hover { color: #666; }
+
+/* ── MAIN APP ─────────────────────────────────── */
+#app { display: none; }
+#app.visible { display: block; }
+
+/* ── SIDEBAR / NAV ──────────────────────────────── */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px;
+  background: var(--charcoal);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+
+.sidebar-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--saffron);
+  margin-bottom: 2px;
+}
+.sidebar-tagline { color: #888; font-size: 0.72rem; margin-bottom: 36px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #999;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+  font-size: 0.88rem;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: #ccc; }
+.nav-item.active { background: rgba(232,100,10,0.15); color: var(--saffron); }
+.nav-item .nav-icon { font-size: 1.1rem; }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 20px;
+}
+.user-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), var(--clay));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+}
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-name { color: #ccc; font-size: 0.85rem; font-weight: 500; }
+.user-diet { color: #666; font-size: 0.72rem; }
+
+/* ── MAIN CONTENT ───────────────────────────────── */
+.main { margin-left: 240px; flex: 1; padding: 32px; }
+
+.page { display: none; animation: fadeUp 0.3s ease; }
+.page.active { display: block; }
+
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+.page-sub { color: #888; font-size: 0.85rem; margin-top: 4px; }
+
+/* ── PLANNER ───────────────────────────────────── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.day-col {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px var(--shadow);
+  min-height: 340px;
+}
+
+.day-header {
+  padding: 12px;
+  background: linear-gradient(180deg, #FFF5EE 0%, #fff 100%);
+  border-bottom: 1px solid #F0E8DC;
+  text-align: center;
+}
+.day-name { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--charcoal); }
+.day-date { font-size: 0.72rem; color: #AAA; margin-top: 2px; }
+.day-today .day-header { background: linear-gradient(180deg, #FFF5EE 0%, #FFF5EE 100%); }
+.day-today .day-name { color: var(--saffron); }
+
+.meal-slots { padding: 8px; }
+
+.meal-slot {
+  margin-bottom: 8px;
+  min-height: 58px;
+  border-radius: 8px;
+  border: 1.5px dashed #E8DDD0;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.meal-slot:hover { border-color: var(--saffron); background: #FFF9F5; }
+.meal-slot.filled { border: none; background: #FFF5EE; }
+.meal-slot.filled:hover { background: #FFE8D6; }
+
+.slot-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #C0B8B0;
+  padding: 6px 8px 2px;
+  font-weight: 600;
+}
+
+.meal-card-mini {
+  padding: 4px 8px 8px;
+}
+.mcm-name { font-size: 0.78rem; font-weight: 600; color: var(--charcoal); line-height: 1.3; }
+.mcm-time { font-size: 0.68rem; color: #AAA; }
+.mcm-remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 18px; height: 18px;
+  background: rgba(212,82,106,0.1);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 0.7rem; color: var(--rose);
+}
+.meal-slot.filled:hover .mcm-remove { opacity: 1; }
+
+.add-meal-btn {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; min-height: 58px;
+  color: #C0B8B0; font-size: 0.8rem;
+  transition: color 0.2s;
+  flex-direction: column; gap: 3px;
+}
+.meal-slot:hover .add-meal-btn { color: var(--saffron); }
+
+/* ── SUGGESTIONS PANEL ─────────────────────────── */
+.suggestions-panel {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 2px 12px var(--shadow);
+  margin-bottom: 24px;
+}
+.sp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.sp-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+.sp-filters { display: flex; gap: 8px; }
+.filter-btn {
+  padding: 6px 14px; border-radius: 50px;
+  border: 1.5px solid #E8DDD0;
+  background: transparent; cursor: pointer;
+  font-size: 0.8rem; font-family: 'DM Sans', sans-serif;
+  color: #777; transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover { border-color: var(--saffron); color: var(--saffron); background: #FFF5EE; }
+
+.meal-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.meal-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--warm-white);
+  border: 1.5px solid #F0E8DC;
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.meal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px var(--shadow);
+}
+.meal-card:active { cursor: grabbing; }
+
+.mc-image {
+  height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  position: relative;
+}
+.mc-region-tag {
+  position: absolute; top: 6px; left: 6px;
+  background: rgba(26,18,8,0.75);
+  color: #fff; font-size: 0.6rem;
+  padding: 2px 7px; border-radius: 50px;
+  backdrop-filter: blur(4px);
+}
+.mc-fav {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(255,255,255,0.8);
+  width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: background 0.2s;
+}
+.mc-fav:hover { background: #FFE0EA; }
+.mc-fav.active { background: #FFE0EA; color: var(--rose); }
+
+.mc-body { padding: 10px 12px 12px; }
+.mc-name { font-weight: 600; font-size: 0.88rem; color: var(--charcoal); margin-bottom: 4px; }
+.mc-meta { display: flex; gap: 10px; font-size: 0.72rem; color: #AAA; }
+.mc-pantry-match {
+  font-size: 0.68rem; color: var(--mint);
+  background: #EDF7F0;
+  padding: 3px 8px; border-radius: 50px;
+  margin-top: 6px; display: inline-block;
+}
+.mc-add-btn {
+  width: 100%; margin-top: 10px;
+  padding: 8px;
+  background: var(--saffron); border: none;
+  border-radius: 7px; color: #fff;
+  font-size: 0.8rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mc-add-btn:hover { background: var(--clay); }
+
+/* ── PANTRY ─────────────────────────────────────── */
+.pantry-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.pantry-section {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.pantry-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.pantry-add-row {
+  display: flex; gap: 10px; margin-bottom: 18px;
+}
+.pantry-input {
+  flex: 1; padding: 10px 14px;
+  border: 1.5px solid #E8DDD0;
+  border-radius: 8px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; outline: none;
+  transition: border-color 0.2s;
+}
+.pantry-input:focus { border-color: var(--saffron); }
+
+.btn-sm {
+  padding: 10px 16px;
+  background: var(--saffron); border: none;
+  border-radius: 8px; color: #fff;
+  font-size: 0.85rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-sm:hover { background: var(--clay); }
+
+.pantry-items { display: flex; flex-direction: column; gap: 8px; }
+.pantry-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--cream);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.pi-icon { font-size: 1.1rem; }
+.pi-name { flex: 1; font-weight: 500; }
+.pi-qty { color: #888; font-size: 0.8rem; }
+.pi-expiry { font-size: 0.72rem; padding: 2px 8px; border-radius: 50px; }
+.pi-expiry.soon { background: #FFF3CD; color: #856404; }
+.pi-expiry.ok { background: #D4EDDA; color: #155724; }
+.pi-remove { color: #CCC; cursor: pointer; font-size: 0.9rem; transition: color 0.2s; }
+.pi-remove:hover { color: var(--rose); }
+
+/* AI Pantry Scanner */
+.ai-scanner {
+  background: linear-gradient(135deg, var(--charcoal), #2D2010);
+  border-radius: var(--radius);
+  padding: 24px;
+  color: #fff;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.ai-scanner::before {
+  content: '✦';
+  position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+  font-size: 4rem; opacity: 0.05;
+}
+.ai-scanner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.ai-badge {
+  background: linear-gradient(135deg, var(--saffron), var(--turmeric));
+  font-size: 0.65rem; padding: 2px 8px; border-radius: 50px;
+  font-weight: 700; letter-spacing: 0.05em;
+}
+.ai-scanner p { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 16px; }
+.ai-input-row { display: flex; gap: 10px; }
+.ai-input {
+  flex: 1; padding: 11px 14px;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 8px; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ai-input::placeholder { color: rgba(255,255,255,0.4); }
+.ai-input:focus { border-color: var(--saffron); }
+.btn-ai {
+  padding: 11px 18px;
+  background: linear-gradient(135deg, var(--saffron), var(--clay));
+  border: none; border-radius: 8px; color: #fff;
+  font-size: 0.85rem; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: transform 0.15s;
+}
+.btn-ai:hover { transform: scale(1.03); }
+
+.ai-result {
+  margin-top: 16px; display: none;
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 14px;
+}
+.ai-result.visible { display: block; animation: fadeUp 0.3s ease; }
+.ai-result-title { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+.ai-recipe-list { list-style: none; }
+.ai-recipe-list li {
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.88rem; display: flex; align-items: center; gap: 8px;
+}
+.ai-recipe-list li:last-child { border-bottom: none; }
+.missing-tag {
+  background: rgba(212,82,106,0.2); color: #F09AB0;
+  font-size: 0.68rem; padding: 2px 8px; border-radius: 50px;
+}
+.expiry-tag {
+  background: rgba(245,166,35,0.2); color: var(--turmeric);
+  font-size: 0.68rem; padding: 2px 8px; border-radius: 50px;
+}
+
+/* ── SHOPPING LIST ───────────────────────────────── */
+.shopping-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+.shopping-card {
+  background: #fff; border-radius: var(--radius);
+  padding: 24px; box-shadow: 0 2px 12px var(--shadow);
+}
+.shopping-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.shop-cat { margin-bottom: 18px; }
+.shop-cat-title {
+  font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #AAA; font-weight: 600;
+  margin-bottom: 8px;
+}
+.shop-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid #F5F0EA;
+  cursor: pointer;
+}
+.shop-item:last-child { border-bottom: none; }
+.shop-check {
+  width: 20px; height: 20px;
+  border: 2px solid #DDD;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+  font-size: 0.75rem;
+}
+.shop-item.done .shop-check { background: var(--mint); border-color: var(--mint); color: #fff; }
+.shop-item.done .shop-name { text-decoration: line-through; color: #CCC; }
+.shop-name { flex: 1; font-size: 0.88rem; }
+.shop-qty { font-size: 0.8rem; color: #AAA; }
+.shop-needed { font-size: 0.72rem; background: #FFF3CD; color: #856404; padding: 2px 8px; border-radius: 50px; }
+
+.whatsapp-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  background: #25D366; border: none; border-radius: 10px;
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; width: 100%; margin-top: 12px;
+  transition: background 0.2s;
+}
+.whatsapp-btn:hover { background: #1DB954; }
+
+/* ── COOK MODE ───────────────────────────────────── */
+.cook-mode-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: var(--charcoal);
+  z-index: 500;
+  padding: 40px;
+  animation: fadeUp 0.3s ease;
+}
+.cook-mode-overlay.active { display: flex; flex-direction: column; }
+
+.cm-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 36px;
+}
+.cm-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; color: var(--saffron);
+}
+.cm-close {
+  background: rgba(255,255,255,0.1);
+  border: none; border-radius: 50%;
+  width: 40px; height: 40px;
+  color: #fff; font-size: 1.2rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.cm-close:hover { background: rgba(255,255,255,0.2); }
+
+.cm-lang-row { display: flex; gap: 8px; margin-bottom: 32px; }
+.cm-lang-btn {
+  padding: 8px 18px; border-radius: 50px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: transparent; color: rgba(255,255,255,0.6);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.cm-lang-btn.active { border-color: var(--saffron); color: var(--saffron); background: rgba(232,100,10,0.1); }
+
+.cm-step-counter {
+  font-size: 0.8rem; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
+}
+.cm-step-text {
+  font-size: 1.4rem; color: #fff; line-height: 1.7;
+  max-width: 700px; margin-bottom: 40px;
+  font-weight: 300;
+}
+.cm-hindi {
+  font-size: 1.2rem; color: var(--turmeric);
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  margin-top: -20px; margin-bottom: 40px;
+  line-height: 1.8;
+  display: none;
+}
+.cm-hindi.visible { display: block; }
+
+.cm-controls { display: flex; gap: 14px; align-items: center; }
+.cm-btn {
+  padding: 14px 28px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+  border: none;
+}
+.cm-btn.prev { background: rgba(255,255,255,0.1); color: #fff; }
+.cm-btn.prev:hover { background: rgba(255,255,255,0.15); }
+.cm-btn.next { background: var(--saffron); color: #fff; box-shadow: 0 6px 20px rgba(232,100,10,0.4); }
+.cm-btn.next:hover { background: var(--clay); }
+
+.voice-indicator {
+  display: flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.4); font-size: 0.82rem;
+  margin-left: auto;
+}
+.voice-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--rose);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.cm-progress {
+  height: 4px; background: rgba(255,255,255,0.1);
+  border-radius: 2px; margin-bottom: 48px; overflow: hidden;
+}
+.cm-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--saffron), var(--turmeric));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── COMMUNITY ───────────────────────────────────── */
+.community-feed {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.community-card {
+  background: #fff; border-radius: var(--radius);
+  overflow: hidden; box-shadow: 0 2px 12px var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.community-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px var(--shadow-deep); }
+
+.cc-banner {
+  height: 80px; display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+  position: relative;
+}
+.cc-location {
+  position: absolute; top: 8px; left: 10px;
+  background: rgba(26,18,8,0.7); color: #fff;
+  font-size: 0.65rem; padding: 3px 8px; border-radius: 50px;
+  backdrop-filter: blur(4px);
+}
+.cc-body { padding: 14px; }
+.cc-name { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 4px; }
+.cc-meals { font-size: 0.8rem; color: #888; margin-bottom: 12px; line-height: 1.5; }
+.cc-actions { display: flex; gap: 8px; }
+.cc-upvote {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 7px;
+  border: 1.5px solid #E8DDD0; background: transparent;
+  font-size: 0.8rem; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+}
+.cc-upvote:hover, .cc-upvote.active { border-color: var(--saffron); background: #FFF5EE; color: var(--saffron); }
+.cc-add {
+  flex: 1; padding: 7px;
+  background: var(--saffron); border: none;
+  border-radius: 7px; color: #fff;
+  font-size: 0.8rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: background 0.2s;
+}
+.cc-add:hover { background: var(--clay); }
+.cc-trending {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.68rem; color: var(--rose);
+  background: #FFF0F3; padding: 3px 8px; border-radius: 50px;
+  margin-bottom: 10px;
+}
+
+/* ── WHATSAPP MODAL ─────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 400;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 20px;
+  padding: 32px; max-width: 480px; width: 90%;
+  animation: fadeUp 0.3s ease;
+}
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 8px; }
+.modal-sub { color: #888; font-size: 0.85rem; margin-bottom: 22px; }
+.wa-phone-input {
+  display: flex; gap: 10px; margin-bottom: 14px;
+}
+.wa-flag { padding: 12px 14px; background: #F5F0EA; border-radius: 8px; font-size: 1rem; }
+.modal-close {
+  width: 100%; padding: 12px;
+  background: transparent; border: 1.5px solid #E8DDD0;
+  border-radius: 8px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  color: #888; margin-top: 10px; transition: all 0.2s;
+}
+.modal-close:hover { border-color: var(--saffron); color: var(--saffron); }
+
+.wa-chat-preview {
+  background: #ECE5DD; border-radius: 12px; padding: 16px;
+  margin: 16px 0; font-size: 0.82rem;
+}
+.wa-bubble {
+  background: #fff; border-radius: 8px 8px 8px 0;
+  padding: 8px 12px; margin-bottom: 8px;
+  max-width: 90%; display: inline-block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  line-height: 1.5;
+}
+.wa-bubble.sent {
+  background: #D9FDD3; border-radius: 8px 8px 0 8px;
+  float: right; clear: both; margin-left: auto;
+}
+.wa-bubble::after { content: ''; display: block; clear: both; }
+
+/* ── RECIPE MODAL ───────────────────────────────── */
+.recipe-modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 400;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+.recipe-modal.active { display: flex; }
+.recipe-box {
+  background: #fff; border-radius: 20px;
+  max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  animation: fadeUp 0.3s ease;
+}
+.recipe-hero {
+  height: 160px; display: flex; align-items: center;
+  justify-content: center; font-size: 5rem;
+  background: linear-gradient(135deg, #FFF5EE, #FFEDD9);
+  border-radius: 20px 20px 0 0;
+}
+.recipe-body { padding: 28px; }
+.recipe-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 6px; }
+.recipe-meta-row { display: flex; gap: 16px; margin-bottom: 20px; font-size: 0.82rem; color: #888; }
+.recipe-meta-item { display: flex; align-items: center; gap: 5px; }
+
+.recipe-section-title {
+  font-weight: 700; font-size: 0.78rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--saffron); margin-bottom: 10px; margin-top: 20px;
+}
+.ingr-list { list-style: none; }
+.ingr-list li {
+  padding: 7px 0; border-bottom: 1px solid #F5F0EA;
+  font-size: 0.88rem; display: flex; justify-content: space-between;
+}
+.ingr-list li:last-child { border-bottom: none; }
+.ingr-have { color: var(--mint); font-size: 0.75rem; }
+.ingr-need { color: var(--rose); font-size: 0.75rem; }
+
+.steps-list { list-style: none; counter-reset: steps; }
+.steps-list li {
+  counter-increment: steps;
+  padding: 10px 0 10px 36px;
+  border-bottom: 1px solid #F5F0EA;
+  font-size: 0.88rem; line-height: 1.6;
+  position: relative;
+}
+.steps-list li::before {
+  content: counter(steps);
+  position: absolute; left: 0; top: 10px;
+  width: 22px; height: 22px;
+  background: var(--saffron); color: #fff;
+  border-radius: 50%; font-size: 0.7rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.recipe-actions { display: flex; gap: 10px; margin-top: 22px; }
+.btn-outline {
+  flex: 1; padding: 12px;
+  border: 2px solid var(--saffron);
+  border-radius: 10px; color: var(--saffron);
+  background: transparent; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  font-size: 0.9rem; transition: all 0.2s;
+}
+.btn-outline:hover { background: var(--saffron); color: #fff; }
+
+/* ── STATS / HOME ───────────────────────────────── */
+.home-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: #fff; border-radius: var(--radius);
+  padding: 22px; box-shadow: 0 2px 12px var(--shadow);
+  position: relative; overflow: hidden;
+}
+.stat-card::after {
+  content: attr(data-icon);
+  position: absolute; right: 16px; bottom: 12px;
+  font-size: 2.5rem; opacity: 0.15;
+}
+.stat-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--saffron); }
+.stat-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.qa-btn {
+  background: #fff; border-radius: var(--radius);
+  padding: 20px 16px; text-align: center;
+  cursor: pointer; box-shadow: 0 2px 12px var(--shadow);
+  border: none; font-family: 'DM Sans', sans-serif;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.qa-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow-deep); }
+.qa-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.qa-label { font-size: 0.8rem; font-weight: 600; color: var(--charcoal); }
+.qa-sub { font-size: 0.7rem; color: #AAA; margin-top: 2px; }
+
+.today-plan {
+  background: #fff; border-radius: var(--radius);
+  padding: 24px; box-shadow: 0 2px 12px var(--shadow);
+}
+.today-meals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.today-meal {
+  background: var(--cream); border-radius: 10px; padding: 14px;
+  text-align: center;
+}
+.tm-type { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: #AAA; font-weight: 600; margin-bottom: 6px; }
+.tm-emoji { font-size: 1.8rem; margin-bottom: 6px; }
+.tm-name { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+.tm-time { font-size: 0.72rem; color: #AAA; margin-top: 3px; }
+
+/* ── TOAST ──────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--charcoal); color: #fff;
+  padding: 14px 20px; border-radius: 10px;
+  font-size: 0.88rem; z-index: 9000;
+  opacity: 0; transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none; max-width: 300px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 1200px) {
+  .week-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-240px); }
+  .main { margin-left: 0; padding: 20px; }
+  .week-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-grid { grid-template-columns: repeat(2, 1fr); }
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+  .pantry-grid, .shopping-layout { grid-template-columns: 1fr; }
+}
+
+/* Misc utility */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px;
+  background: var(--rose); color: #fff;
+  border-radius: 50%; font-size: 0.65rem; font-weight: 700;
+}
+.section-divider { height: 1px; background: #F0E8DC; margin: 24px 0; }
+.loading-dots::after {
+  content: '...';
+  animation: dots 1.2s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ ONBOARDING ═══════════════════════════ -->
+<div id="onboarding">
+  <div class="onboard-card">
+    <div class="ob-logo">🍛 Meal Map</div>
+    <div class="ob-sub">Your personal Indian kitchen planner</div>
+
+    <div class="progress-dots" id="obDots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="ob-step active" id="obStep1">
+      <div class="ob-title">Namaste! 🙏 Let's get started</div>
+      <div class="ob-desc">Tell us a little about yourself so we can personalise your meal suggestions.</div>
+      <input class="ob-input" type="text" id="obName" placeholder="Your name (e.g., Priya)">
+      <input class="ob-input" type="text" id="obCity" placeholder="Your city (e.g., Mumbai, Delhi, Bengaluru)">
+      <div style="font-size:0.8rem;color:#888;margin-bottom:8px;">Preferred language for Cook Mode</div>
+      <div class="chip-group">
+        <div class="chip active" data-group="lang" data-val="Hindi">हिंदी</div>
+        <div class="chip" data-group="lang" data-val="Marathi">मराठी</div>
+        <div class="chip" data-group="lang" data-val="Tamil">தமிழ்</div>
+        <div class="chip" data-group="lang" data-val="Telugu">తెలుగు</div>
+        <div class="chip" data-group="lang" data-val="English">English</div>
+      </div>
+      <button class="btn-primary" onclick="obNext(1)">Continue →</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="ob-step" id="obStep2">
+      <div class="ob-title">Dietary Preferences</div>
+      <div class="ob-desc">Select all that apply. We'll filter meal suggestions accordingly.</div>
+      <div class="chip-group">
+        <div class="chip active" data-group="diet" data-val="Vegetarian">🥦 Vegetarian</div>
+        <div class="chip" data-group="diet" data-val="Vegan">🌱 Vegan</div>
+        <div class="chip" data-group="diet" data-val="Eggetarian">🥚 Eggetarian</div>
+        <div class="chip" data-group="diet" data-val="Non-Veg">🍗 Non-Veg</div>
+        <div class="chip" data-group="diet" data-val="Jain">🟢 Jain</div>
+        <div class="chip" data-group="diet" data-val="Gluten-Free">🌾 Gluten-Free</div>
+      </div>
+      <div style="font-size:0.8rem;color:#888;margin:8px 0;">Allergies / Avoid</div>
+      <input class="ob-input" placeholder="e.g., peanuts, lactose, mustard seeds">
+      <button class="btn-primary" onclick="obNext(2)">Continue →</button>
+      <button class="btn-skip" onclick="obNext(2)">Skip for now</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="ob-step" id="obStep3">
+      <div class="ob-title">Your Cooking Schedule</div>
+      <div class="ob-desc">How much time can you spare for cooking each day? We'll suggest quick meals on busy days.</div>
+      <div class="time-grid" id="timeGrid">
+        <div class="time-card active" data-day="Mon–Fri" onclick="toggleTime(this)">
+          <div class="tc-day">Weekdays</div>
+          <div class="tc-label">⏱ Quick (&lt;30 min)</div>
+        </div>
+        <div class="time-card" data-day="Saturday" onclick="toggleTime(this)">
+          <div class="tc-day">Saturday</div>
+          <div class="tc-label">🕐 Medium (30–60)</div>
+        </div>
+        <div class="time-card" data-day="Sunday" onclick="toggleTime(this)">
+          <div class="tc-day">Sunday</div>
+          <div class="tc-label">👨‍🍳 Leisurely (1h+)</div>
+        </div>
+        <div class="time-card" data-day="Varies" onclick="toggleTime(this)">
+          <div class="tc-day">Varies daily</div>
+          <div class="tc-label">🔀 Flexible</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="obNext(3)">Continue →</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="ob-step" id="obStep4">
+      <div class="ob-title">Regional Cuisine Preferences</div>
+      <div class="ob-desc">Pick your favourite regional cuisines to personalise suggestions.</div>
+      <div class="chip-group">
+        <div class="chip active" data-group="cuisine" data-val="North Indian">North Indian</div>
+        <div class="chip" data-group="cuisine" data-val="South Indian">South Indian</div>
+        <div class="chip" data-group="cuisine" data-val="Maharashtrian">Maharashtrian</div>
+        <div class="chip" data-group="cuisine" data-val="Bengali">Bengali</div>
+        <div class="chip" data-group="cuisine" data-val="Gujarati">Gujarati</div>
+        <div class="chip" data-group="cuisine" data-val="Punjabi">Punjabi</div>
+        <div class="chip" data-group="cuisine" data-val="Rajasthani">Rajasthani</div>
+        <div class="chip" data-group="cuisine" data-val="Hyderabadi">Hyderabadi</div>
+      </div>
+      <button class="btn-primary" onclick="finishOnboarding()">Start Planning! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAIN APP ═══════════════════════════ -->
+<div id="app">
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">🍛 Meal Map</div>
+      <div class="sidebar-tagline">Smart Indian Kitchen Planner</div>
+
+      <div class="nav-item active" onclick="showPage('home')">
+        <span class="nav-icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('planner')">
+        <span class="nav-icon">📅</span> Weekly Planner
+      </div>
+      <div class="nav-item" onclick="showPage('pantry')">
+        <span class="nav-icon">🥡</span> My Pantry
+      </div>
+      <div class="nav-item" onclick="showPage('suggestions')">
+        <span class="nav-icon">✨</span> Meal Suggestions
+      </div>
+      <div class="nav-item" onclick="showPage('shopping')">
+        <span class="nav-icon">🛒</span> Shopping List <span class="badge" style="margin-left:auto">8</span>
+      </div>
+      <div class="nav-item" onclick="showPage('community')">
+        <span class="nav-icon">👥</span> Community
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="avatarInitial">P</div>
+          <div>
+            <div class="user-name" id="sidebarName">Priya</div>
+            <div class="user-diet" id="sidebarDiet">Vegetarian · Mumbai</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- ─── HOME ──────────────────────────────── -->
+      <div class="page active" id="page-home">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Good morning, <span id="homeGreetName">Priya</span>! ☀️</div>
+            <div class="page-sub">Here's your meal overview for today — Thursday, 13 Mar 2026</div>
+          </div>
+          <button class="btn-sm" onclick="showPage('planner')">Plan This Week</button>
+        </div>
+
+        <div class="home-grid">
+          <div class="stat-card" data-icon="📅">
+            <div class="stat-num">5</div>
+            <div class="stat-label">Days planned this week</div>
+          </div>
+          <div class="stat-card" data-icon="🥡">
+            <div class="stat-num">14</div>
+            <div class="stat-label">Pantry items tracked</div>
+          </div>
+          <div class="stat-card" data-icon="♻️">
+            <div class="stat-num">73%</div>
+            <div class="stat-label">Pantry utilisation</div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="qa-btn" onclick="showPage('planner')">
+            <div class="qa-icon">📅</div>
+            <div class="qa-label">Weekly Planner</div>
+            <div class="qa-sub">5 days done</div>
+          </button>
+          <button class="qa-btn" onclick="showCookMode()">
+            <div class="qa-icon">🎙️</div>
+            <div class="qa-label">Cook Mode</div>
+            <div class="qa-sub">Hands-free recipes</div>
+          </button>
+          <button class="qa-btn" onclick="showWhatsApp()">
+            <div class="qa-icon">💬</div>
+            <div class="qa-label">WhatsApp Bot</div>
+            <div class="qa-sub">Share & update plans</div>
+          </button>
+          <button class="qa-btn" onclick="showPage('community')">
+            <div class="qa-icon">👥</div>
+            <div class="qa-label">Community Feed</div>
+            <div class="qa-sub">Trending this week</div>
+          </button>
+        </div>
+
+        <div class="today-plan">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:'Playfair Display',serif;font-size:1.2rem">Today's Meals</div>
+            <button class="btn-sm" onclick="showCookMode()" style="font-size:0.78rem;padding:8px 14px">🎙️ Cook Mode</button>
+          </div>
+          <div class="today-meals">
+            <div class="today-meal">
+              <div class="tm-type">Breakfast</div>
+              <div class="tm-emoji">🥞</div>
+              <div class="tm-name">Poha with Peanuts</div>
+              <div class="tm-time">⏱ 15 min</div>
+            </div>
+            <div class="today-meal">
+              <div class="tm-type">Lunch</div>
+              <div class="tm-emoji">🍛</div>
+              <div class="tm-name">Dal Makhani + Roti</div>
+              <div class="tm-time">⏱ 40 min</div>
+            </div>
+            <div class="today-meal">
+              <div class="tm-type">Dinner</div>
+              <div class="tm-emoji">🥗</div>
+              <div class="tm-name">Palak Paneer + Rice</div>
+              <div class="tm-time">⏱ 30 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── PLANNER ────────────────────────────── -->
+      <div class="page" id="page-planner">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Weekly Meal Planner</div>
+            <div class="page-sub">Click any slot to assign a meal · Drag from Suggestions below</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-sm" style="background:transparent;border:2px solid var(--saffron);color:var(--saffron)" onclick="showShoppingList()">🛒 Generate List</button>
+            <button class="btn-sm" onclick="showToast('Week plan saved! ✓')">Save Plan</button>
+          </div>
+        </div>
+
+        <div class="week-grid" id="weekGrid">
+          <!-- Days will be rendered by JS -->
+        </div>
+
+        <div class="suggestions-panel">
+          <div class="sp-header">
+            <div class="sp-title">✨ Suggested Meals</div>
+            <div class="sp-filters">
+              <button class="filter-btn active" onclick="filterSuggestions('all',this)">All</button>
+              <button class="filter-btn" onclick="filterSuggestions('breakfast',this)">Breakfast</button>
+              <button class="filter-btn" onclick="filterSuggestions('lunch',this)">Lunch</button>
+              <button class="filter-btn" onclick="filterSuggestions('dinner',this)">Dinner</button>
+              <button class="filter-btn" onclick="filterSuggestions('snack',this)">Snacks</button>
+            </div>
+          </div>
+          <div class="meal-cards-row" id="mealCardsRow">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── PANTRY ─────────────────────────────── -->
+      <div class="page" id="page-pantry">
+        <div class="page-header">
+          <div>
+            <div class="page-title">My Pantry</div>
+            <div class="page-sub">Track what you have · Reduce waste · Smart suggestions</div>
+          </div>
+        </div>
+
+        <div class="ai-scanner">
+          <div class="ai-scanner-title">🤖 AI Pantry Scanner <span class="ai-badge">AI</span></div>
+          <p>Type your fridge/pantry contents in plain language. e.g., "half bottle lauki, 2 tomatoes, ginger, leftover paneer"</p>
+          <div class="ai-input-row">
+            <input class="ai-input" id="aiPantryInput" placeholder="What's in your fridge today?">
+            <button class="btn-ai" onclick="runAIScan()">Scan & Suggest →</button>
+          </div>
+          <div class="ai-result" id="aiResult">
+            <div class="ai-result-title">🍽️ Recipes you can make right now</div>
+            <ul class="ai-recipe-list" id="aiRecipeList"></ul>
+          </div>
+        </div>
+
+        <div class="pantry-grid">
+          <div class="pantry-section">
+            <h3>🥦 Vegetables & Fruits</h3>
+            <div class="pantry-add-row">
+              <input class="pantry-input" id="vegInput" placeholder="Add item (e.g., Tomatoes 500g)">
+              <button class="btn-sm" onclick="addPantryItem('veg')">+ Add</button>
+            </div>
+            <div class="pantry-items" id="vegList"></div>
+          </div>
+
+          <div class="pantry-section">
+            <h3>🌾 Staples & Grains</h3>
+            <div class="pantry-add-row">
+              <input class="pantry-input" id="stapleInput" placeholder="Add item (e.g., Basmati Rice 2kg)">
+              <button class="btn-sm" onclick="addPantryItem('staple')">+ Add</button>
+            </div>
+            <div class="pantry-items" id="stapleList"></div>
+          </div>
+
+          <div class="pantry-section">
+            <h3>🧂 Spices & Condiments</h3>
+            <div class="pantry-add-row">
+              <input class="pantry-input" id="spiceInput" placeholder="Add item (e.g., Coriander Powder 200g)">
+              <button class="btn-sm" onclick="addPantryItem('spice')">+ Add</button>
+            </div>
+            <div class="pantry-items" id="spiceList"></div>
+          </div>
+
+          <div class="pantry-section">
+            <h3>🥛 Dairy & Proteins</h3>
+            <div class="pantry-add-row">
+              <input class="pantry-input" id="dairyInput" placeholder="Add item (e.g., Paneer 200g)">
+              <button class="btn-sm" onclick="addPantryItem('dairy')">+ Add</button>
+            </div>
+            <div class="pantry-items" id="dairyList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SUGGESTIONS ────────────────────────── -->
+      <div class="page" id="page-suggestions">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Meal Suggestions</div>
+            <div class="page-sub">Personalised for your pantry, diet & schedule</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+          <button class="filter-btn active" onclick="filterSuggestions('all',this)">All</button>
+          <button class="filter-btn" onclick="filterSuggestions('breakfast',this)">🌅 Breakfast</button>
+          <button class="filter-btn" onclick="filterSuggestions('lunch',this)">☀️ Lunch</button>
+          <button class="filter-btn" onclick="filterSuggestions('dinner',this)">🌙 Dinner</button>
+          <button class="filter-btn" onclick="filterSuggestions('snack',this)">🍎 Snacks</button>
+          <button class="filter-btn" onclick="filterSuggestions('quick',this)">⚡ Under 20 min</button>
+        </div>
+        <div class="meal-cards-row" id="mealCardsSugg" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
+      </div>
+
+      <!-- ─── SHOPPING ────────────────────────────── -->
+      <div class="page" id="page-shopping">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Shopping List</div>
+            <div class="page-sub">Auto-generated from your meal plan · 8 items needed</div>
+          </div>
+          <button class="btn-sm" onclick="showWhatsApp()">📱 Share via WhatsApp</button>
+        </div>
+
+        <div class="shopping-layout">
+          <div class="shopping-card">
+            <h3>🛒 Items to Buy</h3>
+            <div id="shoppingListEl">
+              <!-- rendered by JS -->
+            </div>
+          </div>
+
+          <div>
+            <div class="shopping-card" style="margin-bottom:16px">
+              <h3>✅ Already in Pantry</h3>
+              <div class="shop-item done">
+                <div class="shop-check">✓</div>
+                <div class="shop-name">Basmati Rice</div>
+                <div class="shop-qty">2 kg</div>
+              </div>
+              <div class="shop-item done">
+                <div class="shop-check">✓</div>
+                <div class="shop-name">Jeera</div>
+                <div class="shop-qty">full</div>
+              </div>
+              <div class="shop-item done">
+                <div class="shop-check">✓</div>
+                <div class="shop-name">Ginger</div>
+                <div class="shop-qty">half knob</div>
+              </div>
+              <div class="shop-item done">
+                <div class="shop-check">✓</div>
+                <div class="shop-name">Tomatoes</div>
+                <div class="shop-qty">4 pcs</div>
+              </div>
+            </div>
+
+            <div class="shopping-card">
+              <h3>💬 WhatsApp Integration</h3>
+              <p style="font-size:0.83rem;color:#888;margin-bottom:14px">Send your shopping list to your family group automatically every evening at 6 PM.</p>
+              <button class="whatsapp-btn" onclick="showWhatsApp()">
+                <span style="font-size:1.3rem">💬</span> Connect WhatsApp Bot
+              </button>
+              <button class="btn-sm" style="width:100%;margin-top:10px;background:transparent;border:2px solid var(--saffron);color:var(--saffron)" onclick="showToast('List exported to PDF! ✓')">
+                📄 Export as PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── COMMUNITY ─────────────────────────── -->
+      <div class="page" id="page-community">
+        <div class="page-header">
+          <div>
+            <div class="page-title">What's Cooking Nearby 🗺️</div>
+            <div class="page-sub">Discover trending meal plans from your neighbourhood · All plans shared anonymously</div>
+          </div>
+          <button class="btn-sm" onclick="showToast('Your plan shared anonymously! 🎉')">Share My Plan</button>
+        </div>
+        <div class="community-feed" id="communityFeed">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ─── COOK MODE OVERLAY ─────────────────────────── -->
+<div class="cook-mode-overlay" id="cookMode">
+  <div class="cm-header">
+    <div class="cm-title">🎙️ Cook Mode — Dal Makhani</div>
+    <button class="cm-close" onclick="hideCookMode()">✕</button>
+  </div>
+  <div class="cm-lang-row">
+    <button class="cm-lang-btn active" onclick="setCookLang('en',this)">English</button>
+    <button class="cm-lang-btn" onclick="setCookLang('hi',this)">हिंदी</button>
+    <button class="cm-lang-btn" onclick="setCookLang('mr',this)">मराठी</button>
+    <button class="cm-lang-btn" onclick="setCookLang('ta',this)">தமிழ்</button>
+  </div>
+  <div class="cm-progress"><div class="cm-progress-fill" id="cmProgress" style="width:16.6%"></div></div>
+  <div class="cm-step-counter" id="cmCounter">Step 1 of 6</div>
+  <div class="cm-step-text" id="cmStepText">Rinse and soak the whole urad dal and kidney beans (rajma) in water for at least 8 hours or overnight.</div>
+  <div class="cm-hindi" id="cmHindi">साबुत उड़द दाल और राजमा को 8 घंटे या रात भर पानी में भिगो दें।</div>
+  <div class="cm-controls">
+    <button class="cm-btn prev" onclick="prevStep()">← Prev</button>
+    <button class="cm-btn next" onclick="nextStep()">Next Step →</button>
+    <div class="voice-indicator">
+      <div class="voice-dot"></div>
+      Say "Next step" or "Repeat that"
+    </div>
+  </div>
+</div>
+
+<!-- ─── WHATSAPP MODAL ──────────────────────────── -->
+<div class="modal-overlay" id="waModal">
+  <div class="modal-box">
+    <div class="modal-title">💬 WhatsApp Bot Setup</div>
+    <div class="modal-sub">Connect your number to receive meal plans and send shopping lists to family.</div>
+
+    <div class="wa-chat-preview">
+      <div class="wa-bubble">What's for dinner tonight? 🍽️</div>
+      <div style="clear:both;margin-bottom:6px"></div>
+      <div class="wa-bubble sent">🤖 Meal Map: Tonight's dinner is <b>Palak Paneer</b> with Jeera Rice (ready in 30 min). Need the recipe? Reply <b>RECIPE</b></div>
+      <div style="clear:both;margin-bottom:6px"></div>
+      <div class="wa-bubble">Swap dinner</div>
+      <div style="clear:both;margin-bottom:6px"></div>
+      <div class="wa-bubble sent">🔄 Swapped to <b>Aloo Gobi + Roti</b>! Shopping list updated. Reply <b>LIST</b> to see what to buy.</div>
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="wa-phone-input">
+      <div class="wa-flag">🇮🇳 +91</div>
+      <input class="ob-input" style="margin:0;flex:1" placeholder="Your WhatsApp number">
+    </div>
+
+    <div style="font-size:0.82rem;color:#888;margin-bottom:16px">
+      📢 Auto-push shopping list to family group at:
+      <select style="margin-left:8px;padding:4px 8px;border-radius:6px;border:1.5px solid #E8DDD0;font-family:'DM Sans',sans-serif">
+        <option>6:00 PM daily</option>
+        <option>5:00 PM daily</option>
+        <option>7:00 PM daily</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" onclick="showToast('WhatsApp bot connected! Send a message to get started 💬');hideModal()">Connect Bot</button>
+    <button class="modal-close" onclick="hideModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ─── RECIPE MODAL ────────────────────────────── -->
+<div class="recipe-modal" id="recipeModal">
+  <div class="recipe-box">
+    <div class="recipe-hero" id="recipeHero">🍛</div>
+    <div class="recipe-body">
+      <div class="recipe-name" id="recipeName">Dal Makhani</div>
+      <div class="recipe-meta-row">
+        <div class="recipe-meta-item">⏱ <span id="recipeTime">50 min</span></div>
+        <div class="recipe-meta-item">🍽️ <span>Serves 4</span></div>
+        <div class="recipe-meta-item">📍 <span id="recipeRegion">Punjabi</span></div>
+        <div class="recipe-meta-item">⭐ <span>4.8</span></div>
+      </div>
+
+      <div class="recipe-section-title">INGREDIENTS</div>
+      <ul class="ingr-list" id="recipeIngredients"></ul>
+
+      <div class="recipe-section-title">METHOD</div>
+      <ol class="steps-list" id="recipeSteps"></ol>
+
+      <div class="recipe-actions">
+        <button class="btn-outline" onclick="showToast('Added to Favourites ❤️')">❤️ Save Recipe</button>
+        <button class="btn-primary" style="flex:1" onclick="showCookMode();closeRecipeModal()">🎙️ Cook Mode</button>
+      </div>
+      <button class="modal-close" onclick="closeRecipeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════ DATA ═══════════════════════════
+const MEALS = [
+  { id:1, name:'Poha with Peanuts', emoji:'🥞', type:'breakfast', region:'Maharashtrian', time:15, pantryMatch:90, fav:false,
+    ingredients:['Poha (flattened rice) — 2 cups','Peanuts — ¼ cup','Onion — 1 medium','Green chilli — 2','Mustard seeds — 1 tsp','Curry leaves — 8–10','Turmeric — ½ tsp','Salt to taste','Lemon juice — 1 tbsp','Coriander leaves'],
+    steps:['Rinse poha in a colander and let it soften for 5 minutes.','Heat oil in a pan. Add mustard seeds and let them splutter.','Add peanuts and fry until golden. Add curry leaves, green chilli, onion — sauté till translucent.','Add turmeric and salt. Mix in the poha gently.','Cook on low for 3–4 min. Squeeze lemon juice. Garnish with coriander.'] },
+  { id:2, name:'Dal Makhani', emoji:'🍛', type:'lunch', region:'Punjabi', time:50, pantryMatch:70, fav:true,
+    ingredients:['Urad dal (whole) — 1 cup','Rajma — ¼ cup','Butter — 3 tbsp','Onion — 2 medium','Tomatoes — 3 (puréed)','Ginger-garlic paste — 1½ tsp','Red chilli powder — 1 tsp','Garam masala — ½ tsp','Fresh cream — ¼ cup','Salt to taste'],
+    steps:['Soak urad dal and rajma overnight. Pressure-cook until tender (4–5 whistles).','Heat butter in a heavy pan. Sauté onions until golden brown.','Add ginger-garlic paste and cook for 2 minutes. Add tomato purée and cook until oil separates.','Add spices and the cooked dal. Simmer on very low heat for 30–40 minutes, stirring occasionally.','Stir in cream. Adjust seasoning. Serve with naan or rice.'] },
+  { id:3, name:'Palak Paneer', emoji:'🥗', type:'dinner', region:'North Indian', time:30, pantryMatch:85, fav:false,
+    ingredients:['Palak (spinach) — 4 cups','Paneer — 200g','Onion — 1 large','Tomato — 2','Ginger — 1 inch','Garlic — 4 cloves','Cumin seeds — 1 tsp','Green chilli — 1','Cream — 2 tbsp','Garam masala — ½ tsp'],
+    steps:['Blanch spinach in boiling water for 2 min. Drain, cool and blend to a smooth purée.','Sauté cumin seeds in oil. Add onions and cook until golden. Add ginger-garlic, chilli.','Add tomatoes and cook until mushy. Season with spices.','Pour in spinach purée. Simmer for 5 minutes. Add paneer cubes and cream.','Cook for 3 minutes. Serve hot with roti.'] },
+  { id:4, name:'Idli Sambar', emoji:'🫓', type:'breakfast', region:'South Indian', time:20, pantryMatch:60, fav:false,
+    ingredients:['Idli batter — 2 cups','Toor dal — ½ cup','Sambar masala — 2 tsp','Tamarind — small ball','Mixed vegetables','Curry leaves','Mustard seeds','Dried red chilli'],
+    steps:['Grease idli moulds and pour batter. Steam for 10–12 minutes.','Cook toor dal until soft. Add tamarind water, vegetables and sambar masala.','Temper with mustard seeds, dried chilli and curry leaves.','Combine dal with temper. Simmer 10 min.','Serve idlis with hot sambar and coconut chutney.'] },
+  { id:5, name:'Rajma Chawal', emoji:'🫘', type:'lunch', region:'North Indian', time:45, pantryMatch:75, fav:false,
+    ingredients:['Rajma — 1.5 cups','Rice — 2 cups','Onion — 2','Tomatoes — 3','Ginger-garlic paste — 1 tsp','Rajma masala — 1 tbsp','Ghee — 2 tsp'],
+    steps:['Soak rajma overnight and pressure cook with salt until tender.','Fry onions golden. Add ginger-garlic and tomatoes. Cook until oil separates.','Add rajma masala and cooked rajma. Simmer 20 min.','Cook rice separately. Plate rajma over rice with ghee and onion rings.'] },
+  { id:6, name:'Aloo Paratha', emoji:'🫓', type:'breakfast', region:'Punjabi', time:25, pantryMatch:95, fav:false,
+    ingredients:['Whole wheat flour — 2 cups','Potato — 3 boiled','Green chilli — 2','Coriander leaves','Amchur powder — ½ tsp','Ghee — 2 tbsp','Salt, cumin to taste'],
+    steps:['Make a soft dough with flour, salt and water. Rest 20 min.','Mash potatoes with spices, green chilli, coriander. Mix well.','Roll dough discs, stuff with potato mix, seal and roll flat.','Cook on tawa with ghee until golden brown on both sides.','Serve with dahi and pickle.'] },
+  { id:7, name:'Chole Bhature', emoji:'🧆', type:'lunch', region:'Punjabi', time:35, pantryMatch:55, fav:false,
+    ingredients:['Chickpeas — 2 cups','Bhature dough','Onion, tomato, ginger','Chole masala — 2 tbsp','Tea bags — 2 (for colour)','Ghee, oil'],
+    steps:['Soak chickpeas overnight. Cook with tea bags for dark colour.','Make bhature dough with maida, dahi and oil. Rest 1 hour.','Make gravy with onion, tomato, ginger and chole masala. Add chickpeas.','Roll bhature and deep fry until puffed and golden.','Serve chole over bhature with laccha pyaz.'] },
+  { id:8, name:'Masala Chai', emoji:'☕', type:'snack', region:'North Indian', time:5, pantryMatch:100, fav:true,
+    ingredients:['Milk — 1 cup','Water — ½ cup','Tea leaves — 1 tsp','Ginger — ½ inch grated','Cardamom — 2 pods','Sugar to taste'],
+    steps:['Boil water with ginger and cardamom for 2 min.','Add tea leaves and boil 1 more minute.','Add milk. Simmer until desired colour.','Strain and serve hot.'] },
+  { id:9, name:'Khichdi', emoji:'🍲', type:'dinner', region:'Gujarati', time:25, pantryMatch:90, fav:false,
+    ingredients:['Rice — 1 cup','Moong dal — ½ cup','Ghee — 2 tbsp','Cumin seeds','Turmeric — ½ tsp','Ginger, green chilli','Salt'],
+    steps:['Wash rice and dal together. Soak 20 min.','Heat ghee, add cumin, ginger, chilli. Fry briefly.','Add rice-dal, turmeric and water (3× volume). Pressure cook 2 whistles.','Adjust consistency. Serve with ghee, papad and pickle.'] },
+  { id:10, name:'Baingan Bharta', emoji:'🍆', type:'dinner', region:'Punjabi', time:35, pantryMatch:80, fav:false,
+    ingredients:['Brinjal (baingan) — 2 large','Onion — 2','Tomatoes — 3','Green peas — ½ cup','Ginger-garlic paste','Cumin seeds','Spices'],
+    steps:['Roast baingan directly on flame until charred. Peel and mash.','Fry cumin, onion until golden. Add ginger-garlic, tomatoes.','Add mashed baingan, peas and spices. Cook 10 min.','Garnish with coriander. Serve with roti.'] },
+  { id:11, name:'Upma', emoji:'🍚', type:'breakfast', region:'South Indian', time:15, pantryMatch:85, fav:false,
+    ingredients:['Rava (semolina) — 1 cup','Mustard seeds, urad dal','Onion, green chilli','Vegetables (carrot, beans)','Ghee — 1 tbsp'],
+    steps:['Dry roast rava until fragrant. Keep aside.','Temper mustard seeds, urad dal, curry leaves in ghee.','Add onion, chilli, vegetables. Sauté.','Pour 2 cups boiling water. Add rava gradually, stirring.','Cover and cook 3 min. Serve with coconut chutney.'] },
+  { id:12, name:'Pav Bhaji', emoji:'🍞', type:'snack', region:'Maharashtrian', time:30, pantryMatch:65, fav:false,
+    ingredients:['Mixed vegetables','Pav bread','Butter — 4 tbsp','Onion, tomato','Pav bhaji masala','Lemon, coriander'],
+    steps:['Boil and mash all vegetables.','Fry onion, tomato in butter. Add pav bhaji masala.','Mix in mashed vegetables. Cook until thick.','Toast pav in butter. Serve with bhaji, onion and lemon.'] },
+];
+
+const PANTRY_DATA = {
+  veg: [
+    { name:'Tomatoes', qty:'4 pcs', expiry:'2 days', status:'soon', icon:'🍅' },
+    { name:'Spinach', qty:'1 bunch', expiry:'1 day', status:'soon', icon:'🥬' },
+    { name:'Potato', qty:'6 pcs', expiry:'2 weeks', status:'ok', icon:'🥔' },
+    { name:'Onion', qty:'500g', expiry:'10 days', status:'ok', icon:'🧅' },
+    { name:'Ginger', qty:'half knob', expiry:'1 week', status:'ok', icon:'🫚' },
+  ],
+  staple: [
+    { name:'Basmati Rice', qty:'2 kg', expiry:'3 months', status:'ok', icon:'🌾' },
+    { name:'Urad Dal', qty:'500g', expiry:'2 months', status:'ok', icon:'🫘' },
+    { name:'Rajma', qty:'200g', expiry:'6 months', status:'ok', icon:'🫘' },
+    { name:'Poha', qty:'1 kg', expiry:'4 months', status:'ok', icon:'🌾' },
+  ],
+  spice: [
+    { name:'Jeera', qty:'full', expiry:'1 year', status:'ok', icon:'🌿' },
+    { name:'Haldi', qty:'full', expiry:'1 year', status:'ok', icon:'🟡' },
+    { name:'Garam Masala', qty:'low', expiry:'4 months', status:'ok', icon:'🌶️' },
+    { name:'Dhaniya Powder', qty:'low', expiry:'3 months', status:'ok', icon:'🌿' },
+  ],
+  dairy: [
+    { name:'Paneer', qty:'200g', expiry:'3 days', status:'soon', icon:'🧀' },
+    { name:'Dahi', qty:'500ml', expiry:'2 days', status:'soon', icon:'🥛' },
+    { name:'Amul Butter', qty:'100g', expiry:'2 weeks', status:'ok', icon:'🧈' },
+  ],
+};
+
+const SHOPPING_LIST = [
+  { cat:'Dairy', items:[
+    { name:'Fresh Cream', qty:'200ml', needed:true, done:false },
+    { name:'Milk', qty:'1 litre', needed:false, done:false },
+  ]},
+  { cat:'Vegetables', items:[
+    { name:'Palak (Spinach)', qty:'2 bunches', needed:true, done:false },
+    { name:'Brinjal', qty:'2 large', needed:true, done:false },
+    { name:'Green Peas', qty:'250g', needed:false, done:false },
+  ]},
+  { cat:'Grains & Dal', items:[
+    { name:'Moong Dal', qty:'500g', needed:true, done:false },
+    { name:'Whole Wheat Flour', qty:'1 kg', needed:false, done:false },
+  ]},
+  { cat:'Others', items:[
+    { name:'Pav (Bread Rolls)', qty:'12 pcs', needed:true, done:false },
+  ]},
+];
+
+const COMMUNITY = [
+  { name:'Sunday Rajma Chawal', emoji:'🫘', location:'Karol Bagh, Delhi', meals:'Rajma Chawal · Dal Tadka · Aloo Sabzi · Kheer', upvotes:247, trending:true, bg:'#FFF5EE' },
+  { name:'Maharashtrian Week', emoji:'🥘', location:'Dadar, Mumbai', meals:'Poha · Varan Bhaat · Bhakri · Modak Sunday', upvotes:182, trending:true, bg:'#FDF5FF' },
+  { name:'South Meets North', emoji:'🍛', location:'Koramangala, Bengaluru', meals:'Idli · Dal Makhani · Sambar Rice · Aloo Paratha', upvotes:134, trending:false, bg:'#F0FFF5' },
+  { name:'Lightweight Week', emoji:'🥗', location:'Bandra, Mumbai', meals:'Upma · Khichdi · Dalia · Moong Dal Soup', upvotes:98, trending:false, bg:'#FFF0F3' },
+  { name:'Punjabi Tadka', emoji:'🌶️', location:'Ludhiana, Punjab', meals:'Aloo Paratha · Chole · Sarso Da Saag · Makki Roti', upvotes:213, trending:true, bg:'#FFFBEE' },
+  { name:'Quick Weeknight Meals', emoji:'⚡', location:'Gurgaon, Delhi NCR', meals:'Poha · Maggi Hack · Dal Fry · Dahi Rice', upvotes:167, trending:false, bg:'#F0F8FF' },
+];
+
+const COOK_STEPS = [
+  { en:'Rinse and soak the whole urad dal and kidney beans (rajma) in water for at least 8 hours or overnight.', hi:'साबुत उड़द दाल और राजमा को 8 घंटे या रात भर पानी में भिगो दें।' },
+  { en:'Pressure cook the soaked dal and rajma with salt and water until completely soft (4–5 whistles on high, then 20 min on low).', hi:'भिगोई दाल और राजमा को नमक के साथ प्रेशर कुकर में 4–5 सीटी तक पकाएं।' },
+  { en:'In a heavy-bottomed pan, heat butter. Add finely chopped onions and fry on medium heat until deep golden brown — about 12 minutes.', hi:'भारे पैन में मक्खन गर्म करें। प्याज को मध्यम आँच पर सुनहरा होने तक भूनें — लगभग 12 मिनट।' },
+  { en:'Add ginger-garlic paste. Fry for 2 minutes until fragrant. Add tomato purée and cook until oil separates — about 10 minutes.', hi:'अदरक-लहसुन का पेस्ट डालें और 2 मिनट भूनें। टमाटर प्यूरी डालकर तेल अलग होने तक पकाएं।' },
+  { en:'Add the cooked dal to the masala. Season with red chilli powder, garam masala and salt. Mix well and simmer on very low heat for 30 minutes, stirring every 5 minutes.', hi:'पकी दाल को मसाले में मिलाएं। मसाले डालकर बहुत धीमी आँच पर 30 मिनट तक पकाएं।' },
+  { en:'Finally, stir in fresh cream. Cook for 2 more minutes. Your Dal Makhani is ready! Serve with naan, roti or steamed rice. Garnish with butter and cream.', hi:'अंत में ताज़ी क्रीम मिलाएं और 2 मिनट पकाएं। दाल मखनी तैयार है! नान या चावल के साथ परोसें।' },
+];
+
+const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEK_DATES = ['Mar 9', 'Mar 10', 'Mar 11', 'Mar 12', 'Mar 13', 'Mar 14', 'Mar 15'];
+const MEAL_TYPES = ['Breakfast', 'Lunch', 'Snack', 'Dinner'];
+
+// ═══════════════════════════ STATE ═══════════════════════════
+let userName = 'Priya';
+let cookLang = 'en';
+let cmStep = 0;
+let currentFilter = 'all';
+let weekPlan = {
+  Mon:   { Breakfast:{id:6,name:'Aloo Paratha',emoji:'🫓',time:25}, Lunch:{id:5,name:'Rajma Chawal',emoji:'🫘',time:45}, Snack:null, Dinner:{id:10,name:'Baingan Bharta',emoji:'🍆',time:35} },
+  Tue:   { Breakfast:{id:1,name:'Poha',emoji:'🥞',time:15}, Lunch:null, Snack:{id:8,name:'Masala Chai',emoji:'☕',time:5}, Dinner:{id:3,name:'Palak Paneer',emoji:'🥗',time:30} },
+  Wed:   { Breakfast:{id:11,name:'Upma',emoji:'🍚',time:15}, Lunch:{id:7,name:'Chole Bhature',emoji:'🧆',time:35}, Snack:null, Dinner:{id:9,name:'Khichdi',emoji:'🍲',time:25} },
+  Thu:   { Breakfast:{id:1,name:'Poha',emoji:'🥞',time:15}, Lunch:{id:2,name:'Dal Makhani',emoji:'🍛',time:50}, Snack:null, Dinner:{id:3,name:'Palak Paneer',emoji:'🥗',time:30} },
+  Fri:   { Breakfast:{id:4,name:'Idli Sambar',emoji:'🫓',time:20}, Lunch:null, Snack:{id:12,name:'Pav Bhaji',emoji:'🍞',time:30}, Dinner:null },
+  Sat:   { Breakfast:null, Lunch:{id:5,name:'Rajma Chawal',emoji:'🫘',time:45}, Snack:null, Dinner:{id:2,name:'Dal Makhani',emoji:'🍛',time:50} },
+  Sun:   { Breakfast:{id:6,name:'Aloo Paratha',emoji:'🫓',time:25}, Lunch:{id:7,name:'Chole Bhature',emoji:'🧆',time:35}, Snack:null, Dinner:{id:9,name:'Khichdi',emoji:'🍲',time:25} },
+};
+
+let pendingSlot = null; // { day, type }
+let pantry = JSON.parse(JSON.stringify(PANTRY_DATA));
+
+// ═══════════════════════════ ONBOARDING ═══════════════════════════
+let obCurrentStep = 1;
+
+function obNext(step) {
+  document.getElementById('obStep' + step).classList.remove('active');
+  const next = step + 1;
+  if (next <= 4) {
+    document.getElementById('obStep' + next).classList.add('active');
+    obCurrentStep = next;
+    updateDots();
+  }
+  // capture name from step 1
+  if (step === 1) {
+    const nm = document.getElementById('obName').value.trim();
+    if (nm) userName = nm;
+  }
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.progress-dots .dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === obCurrentStep);
+  });
+}
+
+function toggleTime(el) { el.classList.toggle('active'); }
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('chip') && e.target.dataset.group) {
+    const g = e.target.dataset.group;
+    if (g === 'lang') {
+      document.querySelectorAll(`[data-group="${g}"]`).forEach(c => c.classList.remove('active'));
+      e.target.classList.add('active');
+    } else {
+      e.target.classList.toggle('active');
+    }
+  }
+});
+
+function finishOnboarding() {
+  const nm = document.getElementById('obName')?.value.trim();
+  if (nm) userName = nm;
+  document.getElementById('sidebarName').textContent = userName;
+  document.getElementById('homeGreetName').textContent = userName;
+  document.getElementById('avatarInitial').textContent = userName.charAt(0).toUpperCase();
+  document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  setTimeout(() => { document.getElementById('onboarding').style.display = 'none'; }, 650);
+  initApp();
+}
+
+// ═══════════════════════════ APP INIT ═══════════════════════════
+function initApp() {
+  renderWeekPlanner();
+  renderMealCards('mealCardsRow');
+  renderMealCards('mealCardsSugg');
+  renderPantry();
+  renderShoppingList();
+  renderCommunity();
+}
+
+// ═══════════════════════════ NAV ═══════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const items = document.querySelectorAll('.nav-item');
+  const pages = ['home','planner','pantry','suggestions','shopping','community'];
+  const idx = pages.indexOf(id);
+  if (idx >= 0) items[idx].classList.add('active');
+}
+
+// ═══════════════════════════ WEEK PLANNER ═══════════════════════════
+function renderWeekPlanner() {
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  WEEK_DAYS.forEach((day, di) => {
+    const today = di === 4;
+    const col = document.createElement('div');
+    col.className = 'day-col' + (today ? ' day-today' : '');
+    col.innerHTML = `
+      <div class="day-header">
+        <div class="day-name">${day}</div>
+        <div class="day-date">${WEEK_DATES[di]}</div>
+      </div>
+      <div class="meal-slots">
+        ${MEAL_TYPES.map(type => renderSlot(day, type)).join('')}
+      </div>
+    `;
+    grid.appendChild(col);
+  });
+}
+
+function renderSlot(day, type) {
+  const meal = weekPlan[day][type];
+  if (meal) {
+    return `<div class="meal-slot filled" onclick="openRecipe(${meal.id})">
+      <div class="slot-label">${type}</div>
+      <div class="meal-card-mini">
+        <div class="mcm-name">${meal.emoji} ${meal.name}</div>
+        <div class="mcm-time">⏱ ${meal.time} min</div>
+      </div>
+      <div class="mcm-remove" onclick="event.stopPropagation();removeMeal('${day}','${type}')">✕</div>
+    </div>`;
+  } else {
+    return `<div class="meal-slot" onclick="openSlotPicker('${day}','${type}')">
+      <div class="slot-label">${type}</div>
+      <div class="add-meal-btn">
+        <span style="font-size:1.1rem">+</span>
+        <span style="font-size:0.7rem">Add meal</span>
+      </div>
+    </div>`;
+  }
+}
+
+function removeMeal(day, type) {
+  weekPlan[day][type] = null;
+  renderWeekPlanner();
+  showToast('Meal removed from ' + day + ' ' + type);
+}
+
+function openSlotPicker(day, type) {
+  pendingSlot = { day, type };
+  showPage('suggestions');
+  showToast('Select a meal to add to ' + day + ' ' + type);
+}
+
+// ═══════════════════════════ MEAL CARDS ═══════════════════════════
+function renderMealCards(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const filtered = currentFilter === 'all' ? MEALS
+    : currentFilter === 'quick' ? MEALS.filter(m => m.time <= 20)
+    : MEALS.filter(m => m.type === currentFilter);
+  container.innerHTML = filtered.map(m => `
+    <div class="meal-card" draggable="true" ondragstart="dragStart(event,${m.id})">
+      <div class="mc-image" style="background:${mealBg(m.type)}">
+        <span>${m.emoji}</span>
+        <div class="mc-region-tag">${m.region}</div>
+        <div class="mc-fav ${m.fav ? 'active' : ''}" onclick="toggleFav(${m.id},event)" title="Favourite">
+          ${m.fav ? '❤️' : '🤍'}
+        </div>
+      </div>
+      <div class="mc-body">
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-meta">
+          <span>⏱ ${m.time} min</span>
+          <span>${mealTypeIcon(m.type)} ${cap(m.type)}</span>
+        </div>
+        <div class="mc-pantry-match">✦ ${m.pantryMatch}% pantry match</div>
+        <button class="mc-add-btn" onclick="addMealFromCard(${m.id})">
+          ${pendingSlot ? `Add to ${pendingSlot.day} ${pendingSlot.type}` : '+ Add to Plan'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function mealBg(type) {
+  return { breakfast:'linear-gradient(135deg,#FFF5EE,#FFEDD9)', lunch:'linear-gradient(135deg,#FFF0F5,#FFE0EA)', dinner:'linear-gradient(135deg,#F0F5FF,#E0EAFF)', snack:'linear-gradient(135deg,#F0FFF5,#D4EDE0)' }[type] || '#FFF';
+}
+function mealTypeIcon(type) {
+  return { breakfast:'🌅', lunch:'☀️', dinner:'🌙', snack:'🍎' }[type] || '';
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function toggleFav(id, e) {
+  e.stopPropagation();
+  const m = MEALS.find(x => x.id === id);
+  if (m) { m.fav = !m.fav; renderMealCards('mealCardsRow'); renderMealCards('mealCardsSugg'); }
+}
+
+function addMealFromCard(id) {
+  const m = MEALS.find(x => x.id === id);
+  if (!m) return;
+  if (pendingSlot) {
+    weekPlan[pendingSlot.day][pendingSlot.type] = { id:m.id, name:m.name, emoji:m.emoji, time:m.time };
+    showToast(`${m.name} added to ${pendingSlot.day} ${pendingSlot.type}! ✓`);
+    pendingSlot = null;
+    renderWeekPlanner();
+    renderMealCards('mealCardsRow');
+    renderMealCards('mealCardsSugg');
+    showPage('planner');
+  } else {
+    // pick first empty slot
+    let placed = false;
+    for (const day of WEEK_DAYS) {
+      if (!weekPlan[day][cap(m.type)]) {
+        weekPlan[day][cap(m.type)] = { id:m.id, name:m.name, emoji:m.emoji, time:m.time };
+        showToast(`${m.name} added to ${day} ${cap(m.type)}! ✓`);
+        renderWeekPlanner();
+        placed = true; break;
+      }
+    }
+    if (!placed) showToast(`All ${cap(m.type)} slots filled! Tap a slot to swap.`);
+  }
+}
+
+function filterSuggestions(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderMealCards('mealCardsRow');
+  renderMealCards('mealCardsSugg');
+}
+
+// drag
+function dragStart(event, id) { event.dataTransfer.setData('mealId', id); }
+
+// ═══════════════════════════ PANTRY ═══════════════════════════
+function renderPantry() {
+  ['veg','staple','spice','dairy'].forEach(cat => {
+    const el = document.getElementById(cat + 'List');
+    if (!el) return;
+    el.innerHTML = pantry[cat].map(item => `
+      <div class="pantry-item">
+        <span class="pi-icon">${item.icon}</span>
+        <span class="pi-name">${item.name}</span>
+        <span class="pi-qty">${item.qty}</span>
+        <span class="pi-expiry ${item.status}">Exp: ${item.expiry}</span>
+        <span class="pi-remove" onclick="removePantryItem('${cat}','${item.name}')">✕</span>
+      </div>
+    `).join('');
+  });
+}
+
+function addPantryItem(cat) {
+  const input = document.getElementById(cat + 'Input');
+  const val = input.value.trim();
+  if (!val) return;
+  const icons = { veg:'🥦', staple:'🌾', spice:'🌿', dairy:'🥛' };
+  pantry[cat].push({ name:val, qty:'—', expiry:'?', status:'ok', icon:icons[cat] });
+  input.value = '';
+  renderPantry();
+  showToast(val + ' added to pantry! ✓');
+}
+
+function removePantryItem(cat, name) {
+  pantry[cat] = pantry[cat].filter(i => i.name !== name);
+  renderPantry();
+}
+
+// ═══════════════════════════ AI SCANNER ═══════════════════════════
+const AI_RECIPES = {
+  lauki: [{ name:'Lauki Chana Dal', region:'North Indian', missing:['Chana dal'], expiring:['Lauki'] }],
+  tomato: [{ name:'Tomato Rasam', region:'South Indian', missing:['Tamarind','Rasam powder'], expiring:['Tomatoes'] }],
+  paneer: [{ name:'Paneer Bhurji', region:'Punjabi', missing:['Capsicum'], expiring:['Paneer'] }],
+  spinach: [{ name:'Palak Pulao', region:'North Indian', missing:['Mint'], expiring:['Spinach'] }],
+  default: [
+    { name:'Dal Tadka', region:'All India', missing:['Dhaniya'], expiring:[] },
+    { name:'Aloo Sabzi', region:'North Indian', missing:[], expiring:[] },
+    { name:'Jeera Rice', region:'North Indian', missing:[], expiring:[] },
+  ],
+};
+
+function runAIScan() {
+  const inp = document.getElementById('aiPantryInput').value.trim().toLowerCase();
+  const resultEl = document.getElementById('aiResult');
+  const listEl = document.getElementById('aiRecipeList');
+  if (!inp) return;
+
+  listEl.innerHTML = '<li style="color:rgba(255,255,255,0.5)">Scanning<span class="loading-dots"></span></li>';
+  resultEl.classList.add('visible');
+
+  setTimeout(() => {
+    let recipes = AI_RECIPES.default;
+    if (inp.includes('lauki')) recipes = [...AI_RECIPES.lauki, ...AI_RECIPES.default.slice(0,1)];
+    else if (inp.includes('tomato')) recipes = [...AI_RECIPES.tomato, ...AI_RECIPES.default.slice(0,1)];
+    else if (inp.includes('paneer')) recipes = [...AI_RECIPES.paneer, ...AI_RECIPES.default];
+    else if (inp.includes('palak') || inp.includes('spinach')) recipes = [...AI_RECIPES.spinach, ...AI_RECIPES.default.slice(0,2)];
+
+    listEl.innerHTML = recipes.map(r => `
+      <li>
+        <span style="flex:1">🍽️ <b>${r.name}</b> <span style="color:rgba(255,255,255,0.5);font-size:0.75rem">· ${r.region}</span></span>
+        ${r.expiring.length ? `<span class="expiry-tag">⚡ Use ${r.expiring[0]} first</span>` : ''}
+        ${r.missing.length ? `<span class="missing-tag">Missing: ${r.missing.join(', ')}</span>` : ''}
+      </li>
+    `).join('');
+
+    // auto-add items to pantry
+    inp.split(',').forEach(part => {
+      const cleaned = part.trim().replace(/\d+/g,'').replace(/half|bottle|piece|pcs|kg|g|litre/gi,'').trim();
+      if (cleaned.length > 2) {
+        const icons = { lauki:'🥒', tomato:'🍅', ginger:'🫚', paneer:'🧀', dahi:'🥛', dhaniya:'🌿', spinach:'🥬', palak:'🥬' };
+        let catName = 'veg';
+        if (['paneer','dahi','milk'].some(x => cleaned.includes(x))) catName = 'dairy';
+        else if (['ginger','dhaniya','haldi','jeera'].some(x => cleaned.includes(x))) catName = 'spice';
+        const icon = Object.keys(icons).find(k => cleaned.includes(k)) ? icons[Object.keys(icons).find(k => cleaned.includes(k))] : '🥦';
+        if (!pantry[catName].find(i => i.name.toLowerCase() === cleaned.toLowerCase())) {
+          pantry[catName].push({ name:cap(cleaned), qty:'as described', expiry:'soon', status:'soon', icon });
+        }
+      }
+    });
+    renderPantry();
+  }, 1200);
+}
+
+// ═══════════════════════════ SHOPPING LIST ═══════════════════════════
+function renderShoppingList() {
+  const el = document.getElementById('shoppingListEl');
+  if (!el) return;
+  el.innerHTML = SHOPPING_LIST.map((cat, ci) => `
+    <div class="shop-cat">
+      <div class="shop-cat-title">${cat.cat}</div>
+      ${cat.items.map((item, ii) => `
+        <div class="shop-item ${item.done ? 'done' : ''}" onclick="toggleShopItem(${ci},${ii})">
+          <div class="shop-check">${item.done ? '✓' : ''}</div>
+          <div class="shop-name">${item.name}</div>
+          <div class="shop-qty">${item.qty}</div>
+          ${item.needed ? '<span class="shop-needed">⚡ Essential</span>' : ''}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleShopItem(ci, ii) {
+  SHOPPING_LIST[ci].items[ii].done = !SHOPPING_LIST[ci].items[ii].done;
+  renderShoppingList();
+}
+
+function showShoppingList() { showPage('shopping'); }
+
+// ═══════════════════════════ COMMUNITY ═══════════════════════════
+function renderCommunity() {
+  const el = document.getElementById('communityFeed');
+  if (!el) return;
+  el.innerHTML = COMMUNITY.map((c, i) => `
+    <div class="community-card">
+      <div class="cc-banner" style="background:${c.bg}">
+        <span>${c.emoji}</span>
+        <div class="cc-location">📍 ${c.location}</div>
+      </div>
+      <div class="cc-body">
+        ${c.trending ? '<div class="cc-trending">🔥 Trending this week</div>' : ''}
+        <div class="cc-name">${c.name}</div>
+        <div class="cc-meals">${c.meals}</div>
+        <div class="cc-actions">
+          <button class="cc-upvote" id="upvote${i}" onclick="upvote(${i})">
+            ▲ <span id="uvc${i}">${c.upvotes}</span>
+          </button>
+          <button class="cc-add" onclick="quickAddPlan(${i})">Quick-Add to My Week</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function upvote(i) {
+  COMMUNITY[i].upvotes++;
+  document.getElementById('uvc' + i).textContent = COMMUNITY[i].upvotes;
+  document.getElementById('upvote' + i).classList.add('active');
+}
+
+function quickAddPlan(i) {
+  showToast(`"${COMMUNITY[i].name}" added to your planner! ✓`);
+  showPage('planner');
+}
+
+// ═══════════════════════════ RECIPE MODAL ═══════════════════════════
+function openRecipe(id) {
+  const m = MEALS.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('recipeHero').textContent = m.emoji;
+  document.getElementById('recipeName').textContent = m.name;
+  document.getElementById('recipeTime').textContent = m.time + ' min';
+  document.getElementById('recipeRegion').textContent = m.region;
+  document.getElementById('recipeIngredients').innerHTML = m.ingredients.map((ing, i) => {
+    const have = i < Math.floor(m.ingredients.length * m.pantryMatch / 100);
+    return `<li>${ing} <span class="${have ? 'ingr-have' : 'ingr-need'}">${have ? '✓ In pantry' : '+ Buy'}</span></li>`;
+  }).join('');
+  document.getElementById('recipeSteps').innerHTML = m.steps.map(s => `<li>${s}</li>`).join('');
+  document.getElementById('recipeModal').classList.add('active');
+}
+
+function closeRecipeModal() {
+  document.getElementById('recipeModal').classList.remove('active');
+}
+
+// ═══════════════════════════ COOK MODE ═══════════════════════════
+function showCookMode() {
+  cmStep = 0;
+  updateCookStep();
+  document.getElementById('cookMode').classList.add('active');
+}
+function hideCookMode() {
+  document.getElementById('cookMode').classList.remove('active');
+}
+function nextStep() {
+  if (cmStep < COOK_STEPS.length - 1) { cmStep++; updateCookStep(); }
+  else showToast('Recipe complete! 🎉 Enjoy your meal!');
+}
+function prevStep() {
+  if (cmStep > 0) { cmStep--; updateCookStep(); }
+}
+function updateCookStep() {
+  document.getElementById('cmCounter').textContent = `Step ${cmStep+1} of ${COOK_STEPS.length}`;
+  document.getElementById('cmStepText').textContent = COOK_STEPS[cmStep].en;
+  document.getElementById('cmHindi').textContent = COOK_STEPS[cmStep].hi;
+  document.getElementById('cmProgress').style.width = ((cmStep+1)/COOK_STEPS.length*100) + '%';
+}
+function setCookLang(lang, btn) {
+  cookLang = lang;
+  document.querySelectorAll('.cm-lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const hiEl = document.getElementById('cmHindi');
+  hiEl.classList.toggle('visible', lang === 'hi' || lang === 'mr');
+}
+
+// Voice command simulation
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.continuous = true;
+  rec.onresult = (e) => {
+    const t = e.results[e.results.length-1][0].transcript.toLowerCase();
+    if (t.includes('next')) nextStep();
+    else if (t.includes('repeat') || t.includes('again')) updateCookStep();
+    else if (t.includes('prev') || t.includes('back')) prevStep();
+  };
+  document.getElementById('cookMode').addEventListener('transitionend', () => {
+    if (document.getElementById('cookMode').classList.contains('active')) {
+      try { rec.start(); } catch(e) {}
+    } else { try { rec.stop(); } catch(e) {} }
+  });
+}
+
+// ═══════════════════════════ WHATSAPP ═══════════════════════════
+function showWhatsApp() {
+  document.getElementById('waModal').classList.add('active');
+}
+function hideModal() {
+  document.getElementById('waModal').classList.remove('active');
+}
+
+// ═══════════════════════════ TOAST ═══════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modals on overlay click
+document.getElementById('waModal').addEventListener('click', function(e) {
+  if (e.target === this) hideModal();
+});
+document.getElementById('recipeModal').addEventListener('click', function(e) {
+  if (e.target === this) closeRecipeModal();
+});
+</script>
+</body>
+</html>
