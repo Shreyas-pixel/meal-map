@@ -2,12 +2,14 @@
 Introduction
 In today's fast-paced world, deciding what to eat has become one of the most exhausting daily decisions. Between packed schedules, grocery runs, dietary goals, and the pressure to eat healthily, meal planning often feels like a second job.
 A Meal Planning Tool is a digital application that helps users plan and organize their meals in advance, usually for a week. It allows users to select meals, schedule them for specific days, and automatically create a grocery list based on the planned recipes.
+
 🎯Target Audience
 The primary target audience consists of busy urban professionals and dual-income parents (ages 25–45) who value health and variety but are constrained by demanding schedules. These users often:
 •	Balance high-pressure careers with personal or family commitments.
 •	Seek to reduce "decision fatigue" associated with daily meal choices.
 •	Are tech-savvy and prefer integrated digital solutions (mobile-first).
 •	Value efficiency, sustainability (reducing food waste), and cost-effectiveness.
+
 📌 Problem Statement
 Busy individuals spend significant mental energy deciding what to eat each week, often defaulting to unhealthy takeout or repetitive meals — not because they lack the desire to eat well, but because planning feels overwhelming, time-consuming, and disconnected from their grocery habits.
 
@@ -45,8 +47,6 @@ Busy individuals spend significant mental energy deciding what to eat each week,
 •	Hard to ensure balanced nutrition.
 •	Need reliable weekly planning support.
 
-
-
 🔑Key Problems to Solve
 Decision Fatigue Around Meal Choices Users burn out deciding what to to    to-cook daily. The tool should auto-suggest personalized weekly meal plans based on preferences, dietary restrictions, and past choices — reducing planning to a few clicks.
 Disconnected Planning & Grocery Shopping Meal plans rarely translate into actionable shopping lists, causing missed ingredients and mid-week plan abandonment. The product should auto-generate smart, consolidated grocery lists directly from the weekly plan.
@@ -69,9 +69,6 @@ Wasted Food & Poor Ingredient Utilization Users buy ingredients without a plan, 
 •	User Action: Reviews the generated plan, making minor swaps or adjustments.
 •	System Response: Updates the meal plan and automatically generates a corresponding grocery list.
 •	User Action: Confirms the weekly plan.
-
-
-
 
 2.	Personalized Meal Suggestions
 
@@ -132,10 +129,6 @@ Wasted Food & Poor Ingredient Utilization Users buy ingredients without a plan, 
 •	System Response: Provides step-by-step instructions for the optimized meal prep session.
 •	Outcome: Users save significant time and effort in the kitchen by efficiently preparing ingredients and components for multiple meals at once, reducing overall cooking time throughout the week.
 
-
-
-
-
 Functional Prototype: Meal Map
 Here's Meal Map (link to access the prototype) prototype — a fully functional, single-file Indian meal planning app. Here's what's built in:
 Core Features:
@@ -143,11 +136,7 @@ Core Features:
 •	Weekly Planner: 7-day grid with Breakfast/Lunch/Snack/Dinner slots — click any slot to assign a meal, click a filled meal to see its recipe, and remove meals with the ✕ button
 •	Meal Suggestions: 12 regional Indian dishes with pantry match %, type filters (Breakfast/Lunch/Dinner/Snacks/Quick), and favourites
 •	Pantry Management: 4 categories (Veg, Staples, Spices, Dairy) with expiry tracking and add/remove items
-•	Shopping List: Auto-generated with "Essential" flags, checkoff items, and pantry-matched items already ticked
-Screenshots:
-
-
-
+•	Shopping List: Auto-generated with "Essential" flags, checkoff items, and pantry-matched items already ticket.
 
 What worked: The wins
 •	Fridge-to-plate AI: Using "Computer Vision" (taking a photo of your fridge) to suggest a Subzi or Dal based on what’s actually there has significantly reduced food waste.
